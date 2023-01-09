@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MySql.Data" Version="8.0.31" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="RestSharp" Version="108.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="MySQL">
+      <HintPath>..\..\MySQLNet6\MySQL\bin\Release\net6.0\MySQL.dll</HintPath>
+    </Reference>
+    <Reference Include="StringUtils">
+      <HintPath>..\..\StringUtils\StringUtils\bin\Release\netcoreapp2.1\StringUtils.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
