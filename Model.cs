@@ -46,7 +46,8 @@ namespace NLP
         public static async Task TrainDb(string agent_id)
         {
             Console.WriteLine("Truncating Dataset");
-            Data.Query("TRUNCATE TABLE nlp_dataset;", new string[] { });
+            //Data.Query("TRUNCATE TABLE nlp_dataset;", new string[] { });
+            ClearDataset(agent_id);
 
             string intent_id = "";
             DataSet ds = Data.Query("SELECT intent_id, phrase FROM nlp_questions WHERE agent_id=?agent_id ORDER BY intent_id ASC", new string[] { agent_id });
@@ -73,6 +74,45 @@ namespace NLP
             }
 
             Console.WriteLine("TrainDb Finished");
+        }
+
+
+        public static async Task TrainDb(string agent_id, string intent_id)
+        {
+            //Console.WriteLine("Truncating Dataset");
+            //Data.Query("TRUNCATE TABLE nlp_dataset;", new string[] { });
+
+            DataSet ds = Data.Query("SELECT intent_id, phrase FROM nlp_questions WHERE agent_id=?agent_id AND intent_id=?intent_id ORDER BY intent_id ASC", new string[] { agent_id, intent_id });
+
+            Hashtable hashtable = new Hashtable();
+
+            string _intent_id = "";
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                if (_intent_id != dr[0].ToString())
+                {
+                    _intent_id = dr[0].ToString();
+                    hashtable[dr[0].ToString()] = new List<string>();
+                }
+
+                ((List<string>)hashtable[dr[0].ToString()]).Add(dr[1].ToString());
+            }
+
+            NLP.Classify.word_pooling = 0.7d;
+            NLP.Classify.AgentId = agent_id;
+
+            foreach (DictionaryEntry ht in hashtable)
+            {
+                NLP.Classify.TrainIntentGroup(((List<string>)hashtable[ht.Key.ToString()]).ToArray(), new string[] { ht.Key.ToString() }, true, 10);
+            }
+
+            //Console.WriteLine("TrainDb Finished");
+        }
+
+
+        public static async Task ClearDataset(string agent_id)
+        {
+            Data.Query("DELETE FROM nlp_dataset WHERE agent_id=?agent_id;", new string[] { agent_id });
         }
     }
 }
